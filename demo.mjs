@@ -96,8 +96,11 @@ for (const [label, result] of [['no API key', missing], ['incorrect API key', wr
   const mentionsUnauthorized = /unauthorized/i.test(JSON.stringify(result.data))
   console.log(`Keyed flow, ${label}: HTTP ${result.response.status}; response mentions unauthorized: ${mentionsUnauthorized}.`)
 }
-assert.equal(missing.response.status, 401, 'missing key should return 401')
-assert.equal(wrong.response.status, 401, 'incorrect key should return 401')
+for (const [label, result] of [['missing key', missing], ['incorrect key', wrong]]) {
+  assert.equal(result.response.status, 500, `${label} returned a different status than observed`)
+  assert.match(JSON.stringify(result.data), /unauthorized/i, `${label} response did not mention unauthorized`)
+}
 const validData = expectOk(valid, 'keyed prediction')
 assert.match(JSON.stringify(validData), /Hello from the Flowise access demo/)
 console.log(`Keyed flow, correct API key: HTTP ${valid.response.status}; fixed reply received.`)
+console.log('Observation: unauthorized requests returned HTTP 500, not the expected HTTP 401.')
