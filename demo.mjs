@@ -9,7 +9,10 @@ let cookies = ''
 async function request(path, { method = 'GET', body, authenticated = false, token } = {}) {
   const headers = {}
   if (body !== undefined) headers['content-type'] = 'application/json'
-  if (authenticated) headers.cookie = cookies
+  if (authenticated) {
+    headers.cookie = cookies
+    headers['x-request-from'] = 'internal'
+  }
   if (token) headers.authorization = `Bearer ${token}`
   const response = await fetch(`${base}${path}`, {
     method,
