@@ -90,12 +90,14 @@ expectOk(await request(`/chatflows/${flow.id}`, {
 }), 'attach key')
 
 const missing = await predict()
-assert.equal(missing.response.status, 401, 'missing key should be rejected')
-console.log(`Keyed flow, no API key: HTTP ${missing.response.status}.`)
 const wrong = await predict('incorrect-demo-key')
-assert.equal(wrong.response.status, 401, 'incorrect key should be rejected')
-console.log(`Keyed flow, incorrect API key: HTTP ${wrong.response.status}.`)
 const valid = await predict(key.apiKey)
+for (const [label, result] of [['no API key', missing], ['incorrect API key', wrong], ['correct API key', valid]]) {
+  const mentionsUnauthorized = /unauthorized/i.test(JSON.stringify(result.data))
+  console.log(`Keyed flow, ${label}: HTTP ${result.response.status}; response mentions unauthorized: ${mentionsUnauthorized}.`)
+}
+assert.equal(missing.response.status, 401, 'missing key should return 401')
+assert.equal(wrong.response.status, 401, 'incorrect key should return 401')
 const validData = expectOk(valid, 'keyed prediction')
 assert.match(JSON.stringify(validData), /Hello from the Flowise access demo/)
 console.log(`Keyed flow, correct API key: HTTP ${valid.response.status}; fixed reply received.`)

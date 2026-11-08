@@ -6,6 +6,8 @@ The flow returns a fixed message; it does not call an LLM or demonstrate model q
 
 On the first GitHub-hosted run, the default SQLite session store crashed during startup with `TypeError: this.db.exec is not a function`. The demo sets `EXPIRE_AUTH_TOKENS_ON_RESTART=true` to use an in-memory session store for this disposable test. That workaround is not a production recommendation.
 
+In the first run that reached the flow, a prediction without a flow key returned the fixed reply. After assigning a key, a request without a key returned HTTP 500, rather than the expected HTTP 401. That run stopped at the failed assertion, so it did not test a correct key. See the [run logs](https://github.com/mmajass/flowise-access-demo/actions/runs/42456396468); do not infer from a 500 alone that access was properly blocked.
+
 ## Run
 
 Requires Docker, curl and Node.js 24:
