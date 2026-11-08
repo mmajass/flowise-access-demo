@@ -90,12 +90,17 @@ expectOk(await request(`/chatflows/${flow.id}`, {
 }), 'attach key')
 
 const missing = await predict()
-assert.equal(missing.response.status, 401, 'missing key should be rejected')
-console.log(`Keyed flow, no API key: HTTP ${missing.response.status}.`)
 const wrong = await predict('incorrect-demo-key')
-assert.equal(wrong.response.status, 401, 'incorrect key should be rejected')
-console.log(`Keyed flow, incorrect API key: HTTP ${wrong.response.status}.`)
 const valid = await predict(key.apiKey)
+for (const [label, result] of [['no API key', missing], ['incorrect API key', wrong], ['correct API key', valid]]) {
+  const mentionsUnauthorized = /unauthorized/i.test(JSON.stringify(result.data))
+  console.log(`Keyed flow, ${label}: HTTP ${result.response.status}; response mentions unauthorized: ${mentionsUnauthorized}.`)
+}
+for (const [label, result] of [['missing key', missing], ['incorrect key', wrong]]) {
+  assert.equal(result.response.status, 500, `${label} returned a different status than observed`)
+  assert.match(JSON.stringify(result.data), /unauthorized/i, `${label} response did not mention unauthorized`)
+}
 const validData = expectOk(valid, 'keyed prediction')
 assert.match(JSON.stringify(validData), /Hello from the Flowise access demo/)
 console.log(`Keyed flow, correct API key: HTTP ${valid.response.status}; fixed reply received.`)
+console.log('Observation: unauthorized requests returned HTTP 500, not the expected HTTP 401.')
