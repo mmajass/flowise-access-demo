@@ -1,0 +1,15 @@
+# Flowise access boundary demo
+
+A small, disposable test of the default prediction endpoint and per-flow API key in Flowise 3.1.4. It starts an isolated container bound to localhost, creates a temporary account and a two-node flow, then calls the prediction API before and after attaching an API key.
+
+The flow returns a fixed message; it does not call an LLM or demonstrate model quality. It is an access-control check, not a penetration test. The Flowise image and upstream template are pinned to a release and commit respectively. No real credentials or customer data are used. The container and its temporary state are removed at the end.
+
+## Run
+
+Requires Docker, curl and Node.js 24:
+
+```sh
+bash run-demo.sh
+```
+
+The GitHub Actions workflow runs the same command. It fetches the two visual node definitions from Flowise's upstream template and connects them as a simple Start → Direct Reply flow. The script asserts the expected response and status codes rather than relying on screenshots.
