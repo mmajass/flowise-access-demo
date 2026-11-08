@@ -4,6 +4,8 @@ A small, disposable test of the default prediction endpoint and per-flow API key
 
 The flow returns a fixed message; it does not call an LLM or demonstrate model quality. It is an access-control check, not a penetration test. The Flowise image and upstream template are pinned to a release and commit respectively. No real credentials or customer data are used. The container and its temporary state are removed at the end.
 
+On the first GitHub-hosted run, the default SQLite session store crashed during startup with `TypeError: this.db.exec is not a function`. The demo sets `EXPIRE_AUTH_TOKENS_ON_RESTART=true` to use an in-memory session store for this disposable test. That workaround is not a production recommendation.
+
 ## Run
 
 Requires Docker, curl and Node.js 24:

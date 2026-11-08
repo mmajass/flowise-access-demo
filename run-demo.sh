@@ -10,7 +10,8 @@ cleanup() {
 trap cleanup EXIT
 
 container_id="$(docker run -d -p 127.0.0.1:33001:3000 \
-  -e DISABLE_FLOWISE_TELEMETRY=true flowiseai/flowise:3.1.4)"
+  -e DISABLE_FLOWISE_TELEMETRY=true \
+  -e EXPIRE_AUTH_TOKENS_ON_RESTART=true flowiseai/flowise:3.1.4)"
 
 for i in $(seq 1 90); do
   if curl --silent --fail http://127.0.0.1:33001/api/v1/ping >/dev/null; then
